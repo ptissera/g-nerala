@@ -6,7 +6,7 @@ import PlayerInput from "../components/PlayerInput";
 import Constants from "expo-constants";
 import usePlayers from "../hooks/usePlayers";
 import Button from "../components/Button";
-import { Formik, Form } from 'formik'
+import { Formik, useField } from 'formik'
 import {playerNamesValidationSchema} from '../validationSchemas/playerNames'
 
 const center = {
@@ -39,6 +39,20 @@ const styles = StyleSheet.create({
   },
 });
 
+const FormikInputValue = ({name, ...props}) => {
+  const [field, meta, helpers] = useField(name)
+  return (
+      <>
+          <PlayerInput
+              error={meta.error}
+              value={field.value}
+              onChangeText={value => helpers.setValue(value)}
+              {...props}
+          />
+      </>
+  )
+}
+
 export default function Landing() {
   const totalPlayers = 7;
   const {
@@ -47,14 +61,11 @@ export default function Landing() {
     totalPlayersSelected,
     handlerSelectionTotalPlayers,
   } = usePlayers(totalPlayers);
-  const playerNames = (handleChange, handleBlur) =>
+
+  const playerNames = () =>
     players.map((player, index) => (
-      <PlayerInput
-       name ={`players[${index}]`}
-        onChangeText={handleChange(`players[${index}]`)}
-        onBlur={handleBlur(`players${index}`)}
-        key={player.index}
-        {...player}
+      <FormikInputValue
+        name ={`players[${index}]`}
         style={totalPlayersSelected < index + 1 ? { backgroundColor: "gray" } : {}}
       />
     ));
@@ -73,7 +84,7 @@ export default function Landing() {
          console.log("a VERRRRRRRRRR",values,totalPlayersSelected);
        }}
      >
-       {({ handleChange, handleBlur, handleSubmit, values }) => (
+       {({ handleSubmit }) => (
         <>
         <View style={styles.header}>
           <Text style={{ fontSize: 40, color: theme.colors.textPrimary }}>
@@ -103,7 +114,7 @@ export default function Landing() {
           >
             Ingrese nombre o inicial de los jugadores
           </Text>
-          {playerNames(handleChange, handleBlur)}
+          {playerNames()}
         </View>
         <View style={{ flex: 0 }}>
           <Button
