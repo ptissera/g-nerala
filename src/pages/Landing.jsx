@@ -6,6 +6,8 @@ import PlayerInput from "../components/PlayerInput";
 import Constants from "expo-constants";
 import usePlayers from "../hooks/usePlayers";
 import Button from "../components/Button";
+import { Formik, Form } from 'formik'
+import {playerNamesValidationSchema} from '../validationSchemas/playerNames'
 
 const center = {
   alignItems: "center",
@@ -45,9 +47,12 @@ export default function Landing() {
     totalPlayersSelected,
     handlerSelectionTotalPlayers,
   } = usePlayers(totalPlayers);
-  const playerNames = () =>
+  const playerNames = (handleChange, handleBlur) =>
     players.map((player, index) => (
       <PlayerInput
+       name ={`players[${index}]`}
+        onChangeText={handleChange(`players[${index}]`)}
+        onBlur={handleBlur(`players${index}`)}
         key={player.index}
         {...player}
         style={totalPlayersSelected < index + 1 ? { backgroundColor: "gray" } : {}}
@@ -58,6 +63,18 @@ export default function Landing() {
     <View>
       <StatusBar style="light" />
       <View style={styles.container}>
+      <Formik
+       validationSchema={playerNamesValidationSchema}
+       initialValues={{
+         players: ['', '','', '','', '',''],
+       }}
+       onSubmit={values => {
+         // same shape as initial values
+         console.log("a VERRRRRRRRRR",values,totalPlayersSelected);
+       }}
+     >
+       {({ handleChange, handleBlur, handleSubmit, values }) => (
+        <>
         <View style={styles.header}>
           <Text style={{ fontSize: 40, color: theme.colors.textPrimary }}>
             Anotador
@@ -86,15 +103,19 @@ export default function Landing() {
           >
             Ingrese nombre o inicial de los jugadores
           </Text>
-          {playerNames()}
+          {playerNames(handleChange, handleBlur)}
         </View>
         <View style={{ flex: 0 }}>
           <Button
+            onPress={handleSubmit}
             textStyle={styles.buttonText}
             buttonStyle={styles.button}
             title="    Comenzar    "
           />
         </View>
+        </>
+        )}
+     </Formik>
       </View>
     </View>
   );
