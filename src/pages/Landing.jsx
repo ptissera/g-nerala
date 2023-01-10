@@ -8,6 +8,7 @@ import usePlayers from "../hooks/usePlayers";
 import Button from "../components/Button";
 import { Formik, useField } from 'formik'
 import {playerNamesValidationSchema} from '../validationSchemas/playerNames'
+import { useNavigation } from 'expo-router'
 
 const center = {
   alignItems: "center",
@@ -39,8 +40,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const FormikInputValue = ({name, ...props}) => {
+const FormikInputValue = ({name, disabled, ...props}) => {
   const [field, meta, helpers] = useField(name)
+  field.disabled = disabled
   return (
       <>
           <PlayerInput
@@ -54,6 +56,7 @@ const FormikInputValue = ({name, ...props}) => {
 }
 
 export default function Landing() {
+  const navigation = useNavigation()
   const totalPlayers = 7;
   const {
     players,
@@ -65,7 +68,10 @@ export default function Landing() {
   const playerNames = () =>
     players.map((player, index) => (
       <FormikInputValue
-        name ={`players[${index}]`}
+        name ={`player${index + 1}`}
+        key ={index}
+        disabled={totalPlayersSelected > index  }
+        editable={totalPlayersSelected > index }
         style={totalPlayersSelected < index + 1 ? { backgroundColor: "gray" } : {}}
       />
     ));
@@ -77,7 +83,13 @@ export default function Landing() {
       <Formik
        validationSchema={playerNamesValidationSchema}
        initialValues={{
-         players: ['', '','', '','', '',''],
+         player1: '',
+         player2: '',
+         player3: '',
+         player4: '',
+         player5: '',
+         player6: '',
+         player7: '',
        }}
        onSubmit={values => {
          // same shape as initial values
