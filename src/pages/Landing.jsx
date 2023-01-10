@@ -8,7 +8,7 @@ import usePlayers from "../hooks/usePlayers";
 import Button from "../components/Button";
 import { Formik, useField } from 'formik'
 import {playerNamesValidationSchema} from '../validationSchemas/playerNames'
-import { useNavigation } from 'expo-router'
+import {useRouter}  from 'expo-router'
 
 const center = {
   alignItems: "center",
@@ -56,7 +56,8 @@ const FormikInputValue = ({name, disabled, ...props}) => {
 }
 
 export default function Landing() {
-  const navigation = useNavigation()
+  const router = useRouter();
+  
   const totalPlayers = 7;
   const {
     players,
@@ -75,6 +76,11 @@ export default function Landing() {
         style={totalPlayersSelected < index + 1 ? { backgroundColor: "gray" } : {}}
       />
     ));
+  
+  const onSubmitHandler = values => {
+    console.log("a VERRRRRRRRRR",values,totalPlayersSelected);
+    router.push("/scores")
+  }
 
   return (
     <View>
@@ -91,10 +97,7 @@ export default function Landing() {
          player6: '',
          player7: '',
        }}
-       onSubmit={values => {
-         // same shape as initial values
-         console.log("a VERRRRRRRRRR",values,totalPlayersSelected);
-       }}
+       onSubmit={onSubmitHandler}
      >
        {({ handleSubmit }) => (
         <>
