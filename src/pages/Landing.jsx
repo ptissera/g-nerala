@@ -6,6 +6,9 @@ import PlayerInput from "../components/PlayerInput";
 import Constants from "expo-constants";
 import usePlayers from "../hooks/usePlayers";
 import Button from "../components/Button";
+import { Formik, useField } from 'formik'
+import {playerNamesValidationSchema} from '../validationSchemas/playerNames'
+import { useNavigation } from 'expo-router'
 
 const center = {
   alignItems: "center",
@@ -37,7 +40,23 @@ const styles = StyleSheet.create({
   },
 });
 
+const FormikInputValue = ({name, disabled, ...props}) => {
+  const [field, meta, helpers] = useField(name)
+  field.disabled = disabled
+  return (
+      <>
+          <PlayerInput
+              error={meta.error}
+              value={field.value}
+              onChangeText={value => helpers.setValue(value)}
+              {...props}
+          />
+      </>
+  )
+}
+
 export default function Landing() {
+  const navigation = useNavigation()
   const totalPlayers = 7;
   const {
     players,
@@ -45,11 +64,14 @@ export default function Landing() {
     totalPlayersSelected,
     handlerSelectionTotalPlayers,
   } = usePlayers(totalPlayers);
+
   const playerNames = () =>
     players.map((player, index) => (
-      <PlayerInput
-        key={player.index}
-        {...player}
+      <FormikInputValue
+        name ={`player${index + 1}`}
+        key ={index}
+        disabled={totalPlayersSelected > index  }
+        editable={totalPlayersSelected > index }
         style={totalPlayersSelected < index + 1 ? { backgroundColor: "gray" } : {}}
       />
     ));
@@ -58,6 +80,24 @@ export default function Landing() {
     <View>
       <StatusBar style="light" />
       <View style={styles.container}>
+      <Formik
+       validationSchema={playerNamesValidationSchema}
+       initialValues={{
+         player1: '',
+         player2: '',
+         player3: '',
+         player4: '',
+         player5: '',
+         player6: '',
+         player7: '',
+       }}
+       onSubmit={values => {
+         // same shape as initial values
+         console.log("a VERRRRRRRRRR",values,totalPlayersSelected);
+       }}
+     >
+       {({ handleSubmit }) => (
+        <>
         <View style={styles.header}>
           <Text style={{ fontSize: 40, color: theme.colors.textPrimary }}>
             Anotador
@@ -90,11 +130,15 @@ export default function Landing() {
         </View>
         <View style={{ flex: 0 }}>
           <Button
+            onPress={handleSubmit}
             textStyle={styles.buttonText}
             buttonStyle={styles.button}
             title="    Comenzar    "
           />
         </View>
+        </>
+        )}
+     </Formik>
       </View>
     </View>
   );
