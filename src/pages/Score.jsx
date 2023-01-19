@@ -1,17 +1,32 @@
-import { Text, View } from "react-native";
+import { Text, View, TextInput } from "react-native";
 
 const styles = {
   app: {
-    flex: 7, // the number of columns you want to devide the screen into
+    flex: 8, // the number of columns you want to devide the screen into
     marginHorizontal: "auto",
-    width: 400
   },
   row: {
     flexDirection: "row",
     backgroundColor: "green"
   },
   col:  {
-    flex:  1
+    flex:  1,
+  },
+  double_col:  {
+    flex:  2,
+  },
+  input: {
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#999",
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    marginBottom: 10,
+    backgroundColor: "#fefefe",
+    width: 40,
+  },
+  title: {
+    color: "yellow",
   }
 };
 
@@ -28,8 +43,8 @@ const Row = ({ children }) => (
 const Header = ({players}) => {
   return (
     <Row>
-        <Col></Col>
-        {players.map(({name}, index) =>(<Col key={index}><Text>{name}</Text></Col>))}
+        <Col style={styles.double_col}></Col>
+        {players.map(({name}, index) =>(<Col key={index}><Text style={styles.title}>{name}</Text></Col>))}
     </Row>
   )
 }
@@ -45,8 +60,8 @@ const Body = ({games, players}) => {
 const RowBody = ({game, players}) => {
   return (
     <Row>
-        <Col><Text>{game.name}</Text></Col>
-        {players.map((item, index) =>(<Col key={index}><Text>0</Text></Col>))}
+        <Col style={styles.double_col}><Text>{game.name}</Text></Col>
+        {players.map((item, index) =>(<Col key={index}><TextInput style={styles.input} value={0} /></Col>))}
     </Row>
   )
 }
